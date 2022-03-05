@@ -1,4 +1,8 @@
 const { r } = require('./connection.js');
 
 
-r.getHot().map(post => post.title).then(console.log);
+r.getTop('cscareerquestions',{
+    time: 'all',
+    limit: 10
+}).then(console.log);
+
