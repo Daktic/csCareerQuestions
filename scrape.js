@@ -8,11 +8,8 @@ class submissionCoinage {
         this._subreddit = subreddit;
         this._numOfSubmissions = numOfSubmissions;
         this._timeFrame = timeFrame;
-        this._postGildTokens = {
-            'url': '',
-            'coinValue': 0
-        }
-    } // I want to have a new ob
+        
+    } 
 
     get subreddit() {
         return this._subreddit;
@@ -24,32 +21,48 @@ class submissionCoinage {
         return this._timeFrame;
     }
 
-    //this will need to be new class and this function wall call that class
-    getSubData() {
+    
+
+    async getPosts() {
+        const arrayOfPosts = [];
         let subreddit = this._subreddit
         const subReddit = r.getSubreddit(subreddit)
+
+        const calulateCoinValue = (coin_price, count) => {
+            return coin_price * count
+        }
         //get top subreddit by time range, limit number of submissions to retrieve
-        subReddit.getTop({
+        await subReddit.getTop({
             time: this._timeFrame,
             limit: this._numOfSubmissions
         }).then((posts) => {
             posts.forEach(post => {
-        
-                postGildTokens.url = post.url;
-                post.all_awardings.forEach(
-                    award => {
-                        postGildTokens.coinValue += award.coin_price * award.count //counts coinvalue times num times given
-                    }
-                )
-                console.log(postGildTokens);
+                const slimPost = {
+                    'url': post.url,
+                    'coinValue': 0
+                }  
+                for (let i = 0;i < post.all_awardings.length; i++) {
+                    //iterates through each post and calls calulate coin function.
+                    //add value to slimpost.coinValue object
+                    slimPost['coinValue'] += calulateCoinValue(post.all_awardings[i].coin_price, post.all_awardings[i].count)
+                }
+                arrayOfPosts.push(slimPost);
             })
-        });
+        //console.log(arrayOfPosts) //should have one object per numOfSubmissions
+        return arrayOfPosts
+        })
     }
 }
+    
 
 
 
-todayCsCoin = new submissionCoinage('cscareerquestions', 1, 'week');
 
-console.log(todayCsCoin.getSubData());
+todayCsCoin = new submissionCoinage('cscareerquestions', 2, 'week');
 
+
+
+
+console.log(
+todayCsCoin.getPosts()
+)
