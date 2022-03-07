@@ -32,25 +32,41 @@ class submissionCoinage {
             return coin_price * count
         }
         //get top subreddit by time range, limit number of submissions to retrieve
-        await subReddit.getTop({
+        const posts =  subReddit.getTop({
             time: this._timeFrame,
             limit: this._numOfSubmissions
-        }).then((posts) => {
-            posts.forEach(post => {
-                const slimPost = {
-                    'url': post.url,
-                    'coinValue': 0
-                }  
-                for (let i = 0;i < post.all_awardings.length; i++) {
-                    //iterates through each post and calls calulate coin function.
-                    //add value to slimpost.coinValue object
-                    slimPost['coinValue'] += calulateCoinValue(post.all_awardings[i].coin_price, post.all_awardings[i].count)
-                }
-                arrayOfPosts.push(slimPost);
-            })
-        //console.log(arrayOfPosts) //should have one object per numOfSubmissions
-        return arrayOfPosts
         })
+        posts.forEach(post => {
+        const slimPost = {
+            'post_id': post.id,
+            'coinValue': 0
+        }  
+        for (let i = 0;i < post.all_awardings.length; i++) {
+            //iterates through each post and calls calulate coin function.
+            //add value to slimpost.coinValue object
+            slimPost['coinValue'] += calulateCoinValue(post.all_awardings[i].coin_price, post.all_awardings[i].count)
+        }
+        arrayOfPosts.push(slimPost);
+        console.log(arrayOfPosts)
+            })
+        return arrayOfPosts
+    }
+
+
+    getComments() {
+         
+        let arrayOfPosts = [
+            { post_id: 't4e8o6', coinValue: 1000 },
+            { post_id: 't5tc7k', coinValue: 275 }
+          ]
+        const arrayOfComments = []
+        
+        
+            //arrayOfComments.push(r.getSubmission(post.post_id).comments)
+        console.log(r.getSubmission(arrayOfPosts[0].post_id))
+        
+        //console.log(arrayOfComments)
+        
     }
 }
     
@@ -59,7 +75,6 @@ class submissionCoinage {
 
 
 todayCsCoin = new submissionCoinage('cscareerquestions', 2, 'week');
-
 
 
 
